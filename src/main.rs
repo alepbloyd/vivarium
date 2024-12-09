@@ -1,6 +1,6 @@
-use nannou::prelude::*;
 use nannou::rand::rngs::StdRng;
 use nannou::rand::{Rng, SeedableRng};
+use nannou::{draw, prelude::*};
 use std::f64::consts::PI;
 
 const ROWS: u32 = 40;
@@ -18,10 +18,13 @@ fn main() {
         .run();
 }
 
+trait Nannou {
+    fn display(&self, draw: &Draw);
+    fn update(&mut self);
+}
+
 struct Model {
     random_seed: u64,
-    disp_adj: f32,
-    rot_adj: f32,
     frogs: Vec<Frog>,
 }
 
@@ -35,8 +38,6 @@ fn model(app: &App) -> Model {
         .build()
         .unwrap();
     let random_seed = random_range(0, 1000000);
-    let disp_adj = 1.0;
-    let rot_adj = 1.0;
 
     let mut frogs: Vec<Frog> = Vec::new();
 
@@ -45,11 +46,19 @@ fn model(app: &App) -> Model {
     let frog = Frog::new(body_point);
     frogs.push(frog);
 
-    Model {
-        random_seed,
-        disp_adj,
-        rot_adj,
-        frogs,
+    Model { random_seed, frogs }
+}
+
+impl Nannou for Model {
+    fn display(&self, draw: &Draw) {
+        for frog in &self.frogs {
+            frog.display(draw);
+        }
+    }
+    fn update(&mut self) {
+        for frog in &mut self.frogs {
+            frog.update();
+        }
     }
 }
 
@@ -104,61 +113,67 @@ impl Frog {
     }
 }
 
-fn update(_app: &App, model: &mut Model, _update: Update) {
-    let mut rng = StdRng::seed_from_u64(model.random_seed);
-    for frog in &mut model.frogs {
-        if frog.mouth_angle >= 60.0 {
-            frog.mouth_angle -= 2.0;
-        } else if frog.mouth_angle <= 0.0 {
-            frog.mouth_angle += 2.0;
+impl Nannou for Frog {
+    fn display(&self, draw: &Draw) {
+        draw.ellipse()
+            .color(SEAGREEN)
+            .stroke(SEAGREEN)
+            .stroke_weight(LINE_WIDTH)
+            .radius(5.0)
+            .x_y(self.body_point.x_position, self.body_point.y_position)
+            .w(10.0)
+            .h(10.0);
+
+        draw.ellipse()
+            .color(SEAGREEN)
+            .stroke(SEAGREEN)
+            .stroke_weight(LINE_WIDTH)
+            .radius(5.0)
+            .x_y(self.head_point.x_position, self.head_point.y_position)
+            .w(10.0)
+            .h(10.0);
+
+        draw.ellipse()
+            .color(SEAGREEN)
+            .stroke(SEAGREEN)
+            .stroke_weight(LINE_WIDTH)
+            .radius(5.0)
+            .x_y(self.foot_point.x_position, self.foot_point.y_position)
+            .w(10.0)
+            .h(10.0);
+
+        draw.line()
+            .start(pt2(self.body_point.x_position, self.body_point.y_position))
+            .end(pt2(self.head_point.x_position, self.head_point.y_position))
+            .weight(LINE_WIDTH)
+            .color(SEAGREEN);
+
+        draw.line()
+            .start(pt2(self.body_point.x_position, self.body_point.y_position))
+            .end(pt2(self.foot_point.x_position, self.foot_point.y_position))
+            .weight(LINE_WIDTH)
+            .color(SEAGREEN);
+    }
+    fn update(&mut self) {
+        if self.mouth_angle >= 60.0 {
+            self.mouth_angle -= 2.0;
+        } else if self.mouth_angle <= 0.0 {
+            self.mouth_angle += 2.0;
         }
     }
 }
 
+fn update(_app: &App, model: &mut Model, _update: Update) {
+    // let mut rng = StdRng::seed_from_u64(model.random_seed);
+    model.update();
+}
+
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
-
-    for frog in &model.frogs {
-        draw.ellipse()
-            .color(SEAGREEN)
-            .stroke(SEAGREEN)
-            .stroke_weight(LINE_WIDTH)
-            .radius(5.0)
-            .x_y(frog.body_point.x_position, frog.body_point.y_position)
-            .w(10.0)
-            .h(10.0);
-
-        draw.ellipse()
-            .color(SEAGREEN)
-            .stroke(SEAGREEN)
-            .stroke_weight(LINE_WIDTH)
-            .radius(5.0)
-            .x_y(frog.head_point.x_position, frog.head_point.y_position)
-            .w(10.0)
-            .h(10.0);
-
-        draw.ellipse()
-            .color(SEAGREEN)
-            .stroke(SEAGREEN)
-            .stroke_weight(LINE_WIDTH)
-            .radius(5.0)
-            .x_y(frog.foot_point.x_position, frog.foot_point.y_position)
-            .w(10.0)
-            .h(10.0);
-
-        draw.line()
-            .start(pt2(frog.body_point.x_position, frog.body_point.y_position))
-            .end(pt2(frog.head_point.x_position, frog.head_point.y_position))
-            .weight(LINE_WIDTH)
-            .color(SEAGREEN);
-
-        draw.line()
-            .start(pt2(frog.body_point.x_position, frog.body_point.y_position))
-            .end(pt2(frog.foot_point.x_position, frog.foot_point.y_position))
-            .weight(LINE_WIDTH)
-            .color(SEAGREEN);
-    }
-    draw.to_frame(app, &frame).unwrap();
+    // Draw model
+    model.display(&draw);
+    // Render frame
+    draw.to_frame(&app, &frame).unwrap();
 }
 
 fn key_pressed(app: &App, model: &mut Model, key: Key) {
@@ -170,19 +185,6 @@ fn key_pressed(app: &App, model: &mut Model, key: Key) {
             app.main_window()
                 .capture_frame(app.exe_name().unwrap() + ".png");
         }
-        Key::Up => {
-            model.disp_adj += 0.1;
-        }
-        Key::Down => {
-            model.disp_adj -= 0.1;
-        }
-        Key::Right => {
-            model.rot_adj += 0.5;
-        }
-        Key::Left => {
-            model.rot_adj -= 0.1;
-        }
-
         _other_key => {}
     }
 }
