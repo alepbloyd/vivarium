@@ -4,9 +4,9 @@ use nannou::rand::{Rng, SeedableRng};
 use nannou::{draw, prelude::*};
 use std::f64::consts::PI;
 
-const ROWS: u32 = 40;
-const COLS: u32 = 40;
-const SIZE: u32 = 20;
+const ROWS: u32 = 100;
+const COLS: u32 = 100;
+const SIZE: u32 = 10;
 const LINE_WIDTH: f32 = 2.0;
 const MARGIN: u32 = 35;
 const WIDTH: u32 = COLS * SIZE + 2 * MARGIN;
@@ -55,8 +55,8 @@ fn model(app: &App) -> Model {
     let mut frogs: Vec<Frog> = Vec::new();
 
     for n in 1..6 {
-        let x = random_range(-400, 200);
-        let y = random_range(-100, 100);
+        let x = random_range(0, 800);
+        let y = random_range(0, 800);
         let body_point = Point::new(x as f64, y as f64);
         let frog = Frog::new(body_point);
         frogs.push(frog);
@@ -206,6 +206,13 @@ impl Nannou for Frog {
             .color(SEAGREEN);
     }
     fn update(&mut self) {
+        if self.body_point.y_position > 1.0 {
+            self.body_point.y_position -= 1.0;
+            self.foot_point.y_position -= 1.0;
+            self.head_point.y_position -= 1.0;
+        }
+
+        // mouth open/close
         if self.mouth_direction == MouthDirections::OPENING && self.mouth_angle <= 40.0 {
             self.mouth_angle += 0.20;
             let (new_x, new_y) = get_point_on_circle(
@@ -248,9 +255,33 @@ fn update(_app: &App, model: &mut Model, _update: Update) {
 }
 
 fn view(app: &App, model: &Model, frame: Frame) {
-    let draw = app.draw();
+    let draw = app.draw().x_y(-400.0, -400.0);
 
     draw.background().color(BLACK);
+
+    draw.line()
+        .start(pt2(-1000.0, 0.0))
+        .end(pt2(1000.0, 0.0))
+        .color(RED);
+
+    draw.line()
+        .start(pt2(0.0, -1000.0))
+        .end(pt2(0.0, 1000.0))
+        .color(RED);
+
+    for n in 0..100 {
+        draw.line()
+            .start(pt2(-10.0, (n as f32 * 10.0)))
+            .end(pt2(10.0, (n as f32 * 10.0)))
+            .color(WHITE);
+        if n % 5 == 0 {
+            draw.line()
+                .start(pt2(-10.0, (n as f32 * 10.0)))
+                .end(pt2(10.0, (n as f32 * 10.0)))
+                .color(MAGENTA);
+        }
+    }
+
     // Draw model
     model.display(&draw);
     // Render frame
