@@ -1,7 +1,7 @@
+use nannou::prelude::*;
 use nannou::rand::distributions::Standard;
 use nannou::rand::prelude::Distribution;
-use nannou::rand::{Rng, SeedableRng};
-use nannou::{draw, prelude::*};
+use nannou::rand::Rng;
 use std::f64::consts::PI;
 
 const ROWS: u32 = 100;
@@ -20,7 +20,7 @@ fn main() {
 }
 
 impl Distribution<MouthDirections> for Standard {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> MouthDirections {
+    fn sample<R: Rng + ?Sized>(&self, _rng: &mut R) -> MouthDirections {
         match random_range(0, 2) {
             0 => MouthDirections::OPENING,
             1 => MouthDirections::CLOSING,
@@ -37,6 +37,7 @@ trait Nannou {
 struct Model {
     random_seed: u64,
     frogs: Vec<Frog>,
+    flies: Vec<Fly>,
 }
 
 fn model(app: &App) -> Model {
@@ -53,8 +54,9 @@ fn model(app: &App) -> Model {
     let random_seed = random_range(0, 1000000);
 
     let mut frogs: Vec<Frog> = Vec::new();
+    let mut flies: Vec<Fly> = Vec::new();
 
-    for n in 1..6 {
+    for _n in 1..6 {
         let x = random_range(0, 800);
         let y = random_range(0, 800);
         let body_point = Point::new(x as f64, y as f64);
@@ -62,7 +64,19 @@ fn model(app: &App) -> Model {
         frogs.push(frog);
     }
 
-    Model { random_seed, frogs }
+    for _n in 1..20 {
+        let x = random_range(0, 800);
+        let y = random_range(0, 800);
+        let body_point = Point::new(x as f64, y as f64);
+        let fly = Fly::new(body_point);
+        flies.push(fly);
+    }
+
+    Model {
+        random_seed,
+        frogs,
+        flies,
+    }
 }
 
 impl Nannou for Model {
@@ -70,10 +84,16 @@ impl Nannou for Model {
         for frog in &self.frogs {
             frog.display(draw);
         }
+        for fly in &self.flies {
+            fly.display(draw);
+        }
     }
     fn update(&mut self) {
         for frog in &mut self.frogs {
             frog.update();
+        }
+        for fly in &mut self.flies {
+            fly.update();
         }
     }
 }
@@ -249,6 +269,37 @@ impl Nannou for Frog {
     }
 }
 
+struct Fly {
+    body_point: Point,
+}
+
+impl Fly {
+    fn new(body_point: Point) -> Self {
+        Fly { body_point }
+    }
+}
+
+enum FlyCurrentActions {
+    HOVER,
+    FLIT,
+}
+
+impl Nannou for Fly {
+    fn display(&self, draw: &Draw) {
+        draw.ellipse()
+            .color(YELLOW)
+            .radius(0.5)
+            .x_y(
+                self.body_point.x_position as f32,
+                self.body_point.y_position as f32,
+            )
+            .w(5.0)
+            .h(5.0);
+    }
+
+    fn update(&mut self) {}
+}
+
 fn update(_app: &App, model: &mut Model, _update: Update) {
     // let mut rng = StdRng::seed_from_u64(model.random_seed);
     model.update();
@@ -269,15 +320,30 @@ fn view(app: &App, model: &Model, frame: Frame) {
         .end(pt2(0.0, 1000.0))
         .color(RED);
 
+    // y-axis ticks
     for n in 0..100 {
         draw.line()
-            .start(pt2(-10.0, (n as f32 * 10.0)))
-            .end(pt2(10.0, (n as f32 * 10.0)))
+            .start(pt2(-10.0, n as f32 * 10.0))
+            .end(pt2(10.0, n as f32 * 10.0))
             .color(WHITE);
         if n % 5 == 0 {
             draw.line()
-                .start(pt2(-10.0, (n as f32 * 10.0)))
-                .end(pt2(10.0, (n as f32 * 10.0)))
+                .start(pt2(-10.0, n as f32 * 10.0))
+                .end(pt2(10.0, n as f32 * 10.0))
+                .color(MAGENTA);
+        }
+    }
+
+    // x-axis ticks
+    for n in 0..100 {
+        draw.line()
+            .start(pt2(n as f32 * 10.0, 10.0))
+            .end(pt2(n as f32 * 10.0, -10.0))
+            .color(WHITE);
+        if n % 5 == 0 {
+            draw.line()
+                .start(pt2(n as f32 * 10.0, -10.0))
+                .end(pt2(n as f32 * 10.0, 10.0))
                 .color(MAGENTA);
         }
     }
