@@ -3,9 +3,8 @@ use nannou::rand::distributions::Standard;
 use nannou::rand::prelude::Distribution;
 use nannou::rand::Rng;
 
-use crate::geometry_utils::circle_math::*;
-
-use crate::LINE_WIDTH;
+use crate::config::config::Config;
+use crate::geometry_utils::circle_math::*; // what the hell is this, no.
 
 #[derive(PartialEq, Eq)]
 
@@ -64,10 +63,11 @@ impl Frog {
 
 impl crate::Nannou for Frog {
     fn display(&self, draw: &Draw) {
+        let config = Config::new();
         draw.ellipse()
             .color(SEAGREEN)
             .stroke(SEAGREEN)
-            .stroke_weight(LINE_WIDTH)
+            .stroke_weight(config.line_width)
             .radius(5.0)
             .x_y(self.body_x as f32, self.body_y as f32)
             .w(10.0)
@@ -76,7 +76,7 @@ impl crate::Nannou for Frog {
         draw.ellipse()
             .color(SEAGREEN)
             .stroke(SEAGREEN)
-            .stroke_weight(LINE_WIDTH)
+            .stroke_weight(config.line_width)
             .radius(5.0)
             .x_y(self.head_x as f32, self.head_y as f32)
             .w(10.0)
@@ -85,7 +85,7 @@ impl crate::Nannou for Frog {
         draw.ellipse()
             .color(SEAGREEN)
             .stroke(SEAGREEN)
-            .stroke_weight(LINE_WIDTH)
+            .stroke_weight(config.line_width)
             .radius(5.0)
             .x_y(self.foot_x as f32, self.foot_y as f32)
             .w(10.0)
@@ -94,13 +94,13 @@ impl crate::Nannou for Frog {
         draw.line()
             .start(pt2(self.body_x as f32, self.body_y as f32))
             .end(pt2(self.head_x as f32, self.head_y as f32))
-            .weight(LINE_WIDTH)
+            .weight(config.line_width)
             .color(SEAGREEN);
 
         draw.line()
             .start(pt2(self.body_x as f32, self.body_y as f32))
             .end(pt2(self.foot_x as f32, self.foot_y as f32))
-            .weight(LINE_WIDTH)
+            .weight(config.line_width)
             .color(SEAGREEN);
     }
     fn update(&mut self) {

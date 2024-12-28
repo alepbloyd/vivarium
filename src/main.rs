@@ -4,15 +4,9 @@ mod entities;
 use crate::entities::fly::Fly;
 use crate::entities::frog::Frog;
 
+mod config;
+use crate::config::config::Config; // what the hell is this, no.
 mod geometry_utils;
-
-const ROWS: u32 = 100;
-const COLS: u32 = 100;
-const SIZE: u32 = 10;
-const LINE_WIDTH: f32 = 2.0;
-const MARGIN: u32 = 35;
-const WIDTH: u32 = COLS * SIZE + 2 * MARGIN;
-const HEIGHT: u32 = ROWS * SIZE + 2 * MARGIN;
 
 fn main() {
     nannou::app(model)
@@ -35,10 +29,11 @@ struct Model {
 fn model(app: &App) -> Model {
     // let 🦀 = 1;
     // let 🐈 = 1;
+    let config = Config::new();
     let _window = app
         .new_window()
         .title(app.exe_name().unwrap())
-        .size(WIDTH, HEIGHT)
+        .size(config.width, config.height)
         .view(view)
         .key_pressed(key_pressed)
         .build()
