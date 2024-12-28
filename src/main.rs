@@ -3,7 +3,6 @@ use nannou::prelude::*;
 mod entities;
 use crate::entities::fly::Fly;
 use crate::entities::frog::Frog;
-use crate::entities::point::Point;
 
 mod geometry_utils;
 
@@ -52,16 +51,14 @@ fn model(app: &App) -> Model {
     for _n in 1..6 {
         let x = random_range(0, 800);
         let y = random_range(0, 800);
-        let body_point = Point::new(x as f64, y as f64);
-        let frog = Frog::new(body_point);
+        let frog = Frog::new(x as f64, y as f64);
         frogs.push(frog);
     }
 
     for _n in 1..20 {
         let x = random_range(0, 800);
         let y = random_range(0, 800);
-        let body_point = Point::new(x as f64, y as f64);
-        let fly = Fly::new(body_point);
+        let fly = Fly::new(x as f64, y as f64);
         flies.push(fly);
     }
 
