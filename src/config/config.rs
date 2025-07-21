@@ -17,6 +17,7 @@ impl Config {
         let margin = 35;
         let width = cols * size + 2 * margin;
         let height = rows * size + 2 * margin;
+        let debug_mode = true;
         Config {
             rows,
             cols,
