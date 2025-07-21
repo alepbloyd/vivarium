@@ -8,15 +8,14 @@ pub struct Fly {
 
 impl Fly {
     pub fn new(body_x: f64, body_y: f64) -> Self {
-        let flight_status = FlightStatus::HOVER;
         Fly {
             body_x,
             body_y,
-            flight_status,
+            flight_status: FlightStatus::HOVER,
         }
     }
 }
-
+#[derive(PartialEq, Eq)]
 enum FlightStatus {
     HOVER,
     FLIT,
@@ -32,5 +31,9 @@ impl crate::Nannou for Fly {
             .h(5.0);
     }
 
-    fn update(&mut self) {}
+    fn update(&mut self) {
+        // shaky hover
+        self.body_x += random_range(-1.0, 1.0);
+        self.body_y += random_range(-1.0, 1.0);
+    }
 }

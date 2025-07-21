@@ -1,6 +1,7 @@
 use nannou::prelude::*;
 
 mod entities;
+use crate::entities::fern::Fern;
 use crate::entities::fly::Fly;
 use crate::entities::frog::Frog;
 
@@ -24,6 +25,7 @@ struct Model {
     random_seed: u64,
     frogs: Vec<Frog>,
     flies: Vec<Fly>,
+    ferns: Vec<Fern>,
 }
 
 fn model(app: &App) -> Model {
@@ -42,25 +44,33 @@ fn model(app: &App) -> Model {
 
     let mut frogs: Vec<Frog> = Vec::new();
     let mut flies: Vec<Fly> = Vec::new();
+    let mut ferns: Vec<Fern> = Vec::new();
 
     for _n in 1..6 {
         let x = random_range(0, 800);
-        let y = random_range(0, 800);
+        let y = random_range(0, 500);
         let frog = Frog::new(x as f64, y as f64);
         frogs.push(frog);
     }
 
-    for _n in 1..20 {
+    for _n in 1..100 {
         let x = random_range(0, 800);
         let y = random_range(0, 800);
         let fly = Fly::new(x as f64, y as f64);
         flies.push(fly);
     }
 
+    for _n in 1..10 {
+        let x = random_range(0, 1000);
+        let fern = Fern::new(x as f64, 0.0);
+        ferns.push(fern)
+    }
+
     Model {
         random_seed,
         frogs,
         flies,
+        ferns,
     }
 }
 
@@ -72,6 +82,9 @@ impl Nannou for Model {
         for fly in &self.flies {
             fly.display(draw);
         }
+        for fern in &self.ferns {
+            fern.display(draw);
+        }
     }
     fn update(&mut self) {
         for frog in &mut self.frogs {
@@ -79,6 +92,9 @@ impl Nannou for Model {
         }
         for fly in &mut self.flies {
             fly.update();
+        }
+        for fern in &mut self.ferns {
+            fern.update();
         }
     }
 }
