@@ -6,6 +6,7 @@ pub struct Config {
     pub margin: u32,
     pub width: u32,
     pub height: u32,
+    pub debug_mode: bool,
 }
 
 impl Config {
@@ -17,7 +18,7 @@ impl Config {
         let margin = 35;
         let width = cols * size + 2 * margin;
         let height = rows * size + 2 * margin;
-        let debug_mode = true;
+        let debug_mode = false;
         Config {
             rows,
             cols,
@@ -26,6 +27,7 @@ impl Config {
             margin,
             width,
             height,
+            debug_mode,
         }
     }
 }

@@ -25,9 +25,9 @@ enum LifeCycleStatus {
 
 impl Fern {
     pub fn new(base_x: f64, base_y: f64) -> Self {
-        let height_cap = random_range(100, 200) as f64;
+        let height_cap = random_range(200, 300) as f64;
         let age = 0;
-        let age_cap = random_range(200, 500);
+        let age_cap = random_range(600, 1000);
         let current_height = 0.0;
         let life_cycle_status = LifeCycleStatus::JUVENILE;
         let red_value = random_range(50, 100) as f32;

@@ -105,45 +105,47 @@ fn update(_app: &App, model: &mut Model, _update: Update) {
 }
 
 fn view(app: &App, model: &Model, frame: Frame) {
+    let config = Config::new();
     let draw = app.draw().x_y(-400.0, -400.0);
 
     draw.background().color(BLACK);
 
-    draw.line()
-        .start(pt2(-1000.0, 0.0))
-        .end(pt2(1000.0, 0.0))
-        .color(RED);
-
-    draw.line()
-        .start(pt2(0.0, -1000.0))
-        .end(pt2(0.0, 1000.0))
-        .color(RED);
-
-    // y-axis ticks
-    for n in 0..100 {
+    if config.debug_mode == true {
         draw.line()
-            .start(pt2(-10.0, n as f32 * 10.0))
-            .end(pt2(10.0, n as f32 * 10.0))
-            .color(WHITE);
-        if n % 5 == 0 {
+            .start(pt2(-1000.0, 0.0))
+            .end(pt2(1000.0, 0.0))
+            .color(RED);
+
+        draw.line()
+            .start(pt2(0.0, -1000.0))
+            .end(pt2(0.0, 1000.0))
+            .color(RED);
+        // y-axis ticks
+        for n in 0..100 {
             draw.line()
                 .start(pt2(-10.0, n as f32 * 10.0))
                 .end(pt2(10.0, n as f32 * 10.0))
-                .color(MAGENTA);
+                .color(WHITE);
+            if n % 5 == 0 {
+                draw.line()
+                    .start(pt2(-10.0, n as f32 * 10.0))
+                    .end(pt2(10.0, n as f32 * 10.0))
+                    .color(MAGENTA);
+            }
         }
-    }
 
-    // x-axis ticks
-    for n in 0..100 {
-        draw.line()
-            .start(pt2(n as f32 * 10.0, 10.0))
-            .end(pt2(n as f32 * 10.0, -10.0))
-            .color(WHITE);
-        if n % 5 == 0 {
+        // x-axis ticks
+        for n in 0..100 {
             draw.line()
-                .start(pt2(n as f32 * 10.0, -10.0))
-                .end(pt2(n as f32 * 10.0, 10.0))
-                .color(MAGENTA);
+                .start(pt2(n as f32 * 10.0, 10.0))
+                .end(pt2(n as f32 * 10.0, -10.0))
+                .color(WHITE);
+            if n % 5 == 0 {
+                draw.line()
+                    .start(pt2(n as f32 * 10.0, -10.0))
+                    .end(pt2(n as f32 * 10.0, 10.0))
+                    .color(MAGENTA);
+            }
         }
     }
 
